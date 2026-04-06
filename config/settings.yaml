@@ -1,0 +1,38 @@
+podcast:
+  name: "Game Over Cast"
+  language: "pt-BR"
+  description: "Seu podcast semanal de games gerado por IA"
+  hosts:
+    - name: "Lucas"
+      voice_id: "JBFqnCBsd6RMkjVDRZzb"
+      personality: "Entusiasmado, adora jogos indie, faz piadas e referências a cultura pop"
+    - name: "Marina"
+      voice_id: "EXAVITQu4vr4xnSDxMaL"
+      personality: "Analítica, fã de jogos competitivos, faz perguntas provocativas"
+  target_duration_minutes: 15
+  max_topics: 5
+
+collector:
+  lookback_hours: 48
+  feeds:
+    - url: "https://www.ign.com/rss/articles"
+      name: "IGN"
+    - url: "https://www.pcgamer.com/rss/"
+      name: "PC Gamer"
+    - url: "https://www.eurogamer.net/feed"
+      name: "Eurogamer"
+    - url: "https://www.thegamer.com/feed/"
+      name: "TheGamer"
+    - url: "https://www.theenemy.com.br/feed"
+      name: "The Enemy"
+
+audio:
+  tts_model: "eleven_multilingual_v2"
+  output_format: "mp3_44100_128"
+  silence_between_turns_ms: 300
+
+publisher:
+  storage_backend: "local"
+  output_dir: "data/episodes"
+  feed_path: "data/feed.xml"
+  base_url: "https://example.com/podcast"
