@@ -87,40 +87,87 @@ podcast-ai audio --from-file data/scripts/ep_001.json     # Gerar áudio
 podcast-ai episodes                                       # Listar episódios
 ```
 
-## Publicar no Spotify
+## Deploy no Cloudflare + Spotify
 
-### 1. Configurar storage público
+O projeto inclui um **Cloudflare Worker** que serve a landing page, feed RSS e episódios
+a partir do **Cloudflare R2** (storage gratuito até 10GB/mês).
 
-O Spotify precisa acessar seus arquivos de áudio e feed RSS via URLs públicas.
-Opções recomendadas:
+### 1. Criar o bucket R2
 
-- **Cloudflare R2** - Grátis até 10GB/mês, compatível com S3
-- **AWS S3** - Amplamente suportado
-- **Qualquer hosting estático** com URLs públicas
+```bash
+# Instale o Wrangler CLI
+npm install -g wrangler
 
-### 2. Configurar artwork
+# Faça login na Cloudflare
+wrangler login
 
-Spotify exige uma imagem de capa:
-- Formato: JPEG ou PNG
-- Tamanho: entre 1400x1400 e 3000x3000 pixels
-- Configure a URL em `podcast.artwork_url` no settings.yaml
+# Crie o bucket R2
+wrangler r2 bucket create podcast-ai
+```
 
-### 3. Gerar primeiro episódio
+### 2. Configurar o projeto
+
+Edite `config/settings.yaml`:
+
+```yaml
+publisher:
+  storage_backend: "s3"
+  base_url: "https://podcast-ai.<seu-subdomain>.workers.dev"
+  s3_bucket: "podcast-ai"
+  s3_endpoint_url: "https://<account_id>.r2.cloudflarestorage.com"
+```
+
+Edite `.env`:
+
+```
+AWS_ACCESS_KEY_ID=<R2 Access Key ID>
+AWS_SECRET_ACCESS_KEY=<R2 Secret Access Key>
+```
+
+(Gere as chaves R2 em: Cloudflare Dashboard > R2 > Manage R2 API Tokens)
+
+### 3. Deploy do Worker
+
+```bash
+# Deploy do Worker que serve os arquivos
+wrangler deploy
+```
+
+O Worker fica disponível em `https://podcast-ai.<seu-subdomain>.workers.dev`
+
+### 4. Configurar artwork
+
+Spotify exige uma imagem de capa (1400x1400 a 3000x3000, JPEG/PNG):
+
+```bash
+# Upload manual da artwork para o R2
+wrangler r2 object put podcast-ai/artwork.jpg --file=assets/artwork.jpg
+```
+
+Configure em `settings.yaml`:
+```yaml
+podcast:
+  artwork_url: "https://podcast-ai.<seu-subdomain>.workers.dev/artwork.jpg"
+```
+
+### 5. Gerar primeiro episódio
 
 ```bash
 podcast-ai run
 ```
 
-### 4. Submeter ao Spotify
+Verifique o feed em: `https://podcast-ai.<seu-subdomain>.workers.dev/feed.xml`
+
+### 6. Submeter ao Spotify
 
 1. Acesse [Spotify for Podcasters](https://podcasters.spotify.com/)
 2. Clique em "Add your podcast"
-3. Cole a URL do seu feed RSS: `https://seu-dominio.com/podcast/feed.xml`
+3. Cole a URL do feed: `https://podcast-ai.<seu-subdomain>.workers.dev/feed.xml`
 4. Siga as instruções de verificação
 
-O Spotify passa a buscar seu feed automaticamente (geralmente a cada poucas horas).
+O Spotify busca o feed automaticamente a cada poucas horas.
 
-### 5. Automatizar
+### 7. Automatizar geração diária
 
 ```bash
 # Inicia o scheduler que gera um episódio novo todo dia

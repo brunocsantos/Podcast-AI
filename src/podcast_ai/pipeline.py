@@ -24,8 +24,8 @@ def run_pipeline(settings: Settings, episode_number: int | None = None) -> Path:
     from podcast_ai.audio.tts_engine import generate_audio_segments
     from podcast_ai.audio.audio_assembler import assemble_episode
     from podcast_ai.publisher.episode_tracker import EpisodeTracker
-    from podcast_ai.publisher.feed_generator import build_feed, upload_feed
-    from podcast_ai.publisher.storage import upload_episode
+    from podcast_ai.publisher.feed_generator import build_feed
+    from podcast_ai.publisher.storage import upload_episode, upload_feed
 
     data_dir = PROJECT_ROOT / "data"
     tracker = EpisodeTracker(data_dir / "episodes.json")
@@ -120,7 +120,12 @@ def run_pipeline(settings: Settings, episode_number: int | None = None) -> Path:
         publisher_config=settings.publisher,
         episodes=tracker.get_all(),
     )
-    upload_feed(feed_path, settings.publisher)
+    upload_feed(
+        feed_path,
+        settings.publisher,
+        aws_access_key_id=settings.aws_access_key_id or None,
+        aws_secret_access_key=settings.aws_secret_access_key or None,
+    )
 
     log.info("pipeline_complete", episode=episode_number, audio=str(output_path))
     return output_path

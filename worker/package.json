@@ -1,0 +1,6 @@
+{
+  "name": "podcast-ai-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Worker to serve Game Over Cast podcast"
+}

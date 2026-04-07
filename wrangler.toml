@@ -1,0 +1,14 @@
+name = "podcast-ai"
+main = "worker/index.js"
+compatibility_date = "2024-09-25"
+
+# R2 bucket binding - stores audio files and feed.xml
+[[r2_buckets]]
+binding = "PODCAST_BUCKET"
+bucket_name = "podcast-ai"
+
+[site]
+bucket = "./worker/public"
+
+[vars]
+PODCAST_NAME = "Game Over Cast"

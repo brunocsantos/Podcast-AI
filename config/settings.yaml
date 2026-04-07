@@ -42,6 +42,8 @@ publisher:
   s3_bucket: ""
   s3_region: "us-east-1"
   s3_endpoint_url: ""  # Para Cloudflare R2: https://<account_id>.r2.cloudflarestorage.com
+  # A base_url deve apontar para o seu Worker Cloudflare
+  # Exemplo: https://podcast-ai.<seu-subdomain>.workers.dev
 
 scheduler:
   enabled: true
