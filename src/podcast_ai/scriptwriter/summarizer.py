@@ -2,7 +2,8 @@
 
 import json
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from podcast_ai.models.schemas import Article, Topic
 from podcast_ai.utils.logging import get_logger
@@ -43,12 +44,12 @@ def summarize_articles(
         for i, a in enumerate(articles)
     )
 
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    client = genai.Client(api_key=api_key)
 
-    response = model.generate_content(
-        SUMMARIZE_PROMPT.format(max_topics=max_topics, articles_text=articles_text),
-        generation_config=genai.types.GenerationConfig(
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=SUMMARIZE_PROMPT.format(max_topics=max_topics, articles_text=articles_text),
+        config=types.GenerateContentConfig(
             response_mime_type="application/json",
         ),
     )

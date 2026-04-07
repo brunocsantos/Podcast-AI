@@ -3,7 +3,8 @@
 import json
 from datetime import date
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from podcast_ai.models.schemas import DialogueLine, Script, Topic
 from podcast_ai.scriptwriter.prompts import EPISODE_PROMPT, SYSTEM_PROMPT
@@ -40,15 +41,13 @@ def generate_script(
         topics_text=topics_text,
     )
 
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(
-        "gemini-2.0-flash",
-        system_instruction=system,
-    )
+    client = genai.Client(api_key=api_key)
 
-    response = model.generate_content(
-        user_message,
-        generation_config=genai.types.GenerationConfig(
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=user_message,
+        config=types.GenerateContentConfig(
+            system_instruction=system,
             response_mime_type="application/json",
         ),
     )

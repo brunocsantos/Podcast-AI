@@ -1,6 +1,17 @@
 """Structured logging setup."""
 
+import logging
+
 import structlog
+
+
+LEVEL_MAP = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRITICAL": logging.CRITICAL,
+}
 
 
 def setup_logging(level: str = "INFO") -> None:
@@ -13,7 +24,7 @@ def setup_logging(level: str = "INFO") -> None:
             structlog.dev.ConsoleRenderer(),
         ],
         wrapper_class=structlog.make_filtering_bound_logger(
-            structlog.get_level_from_name(level)
+            LEVEL_MAP.get(level.upper(), logging.INFO)
         ),
         context_class=dict,
         logger_factory=structlog.PrintLoggerFactory(),
@@ -21,6 +32,6 @@ def setup_logging(level: str = "INFO") -> None:
     )
 
 
-def get_logger(name: str) -> structlog.stdlib.BoundLogger:
+def get_logger(name: str):
     """Get a named logger instance."""
     return structlog.get_logger(name)
