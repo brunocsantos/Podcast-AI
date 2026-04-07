@@ -8,14 +8,22 @@
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>python-podgen v1.1.0 https://podgen.readthedocs.org</generator>
     <language>pt-BR</language>
-    <lastBuildDate>Tue, 07 Apr 2026 19:35:36 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 07 Apr 2026 19:38:29 +0000</lastBuildDate>
     <itunes:author>Game Over Cast AI</itunes:author>
     <dc:creator>Game Over Cast AI</dc:creator>
-    <pubDate>Tue, 07 Apr 2026 19:35:36 +0000</pubDate>
+    <pubDate>Tue, 07 Apr 2026 19:38:29 +0000</pubDate>
     <itunes:category text="Leisure">
       <itunes:category text="Video Games"/>
     </itunes:category>
     <itunes:image href="https://brunocsantos.github.io/Podcast-AI/artwork.jpg"/>
+    <item>
+      <title>Game Over Cast #3: Novidades, Tecnologia e Comunidade</title>
+      <description><![CDATA[Neste episódio, discutimos as últimas novidades nos jogos, avanços tecnológicos e eventos da comunidade de games.]]></description>
+      <content:encoded><![CDATA[Neste episódio, discutimos as últimas novidades nos jogos, avanços tecnológicos e eventos da comunidade de games.]]></content:encoded>
+      <guid isPermaLink="false">https://brunocsantos.github.io/Podcast-AI/episodes/ep_003.mp3</guid>
+      <enclosure url="https://brunocsantos.github.io/Podcast-AI/episodes/ep_003.mp3" length="2704657" type="audio/mpeg"/>
+      <pubDate>Tue, 07 Apr 2026 19:38:29 +0000</pubDate>
+    </item>
     <item>
       <title>Episódio #2: Novidades e Análises do Mundo dos Games</title>
       <description><![CDATA[Neste episódio, discutimos as últimas notícias sobre desenvolvimento de jogos, análises de jogos recentes e notícias do mercado e da comunidade de games.]]></description>
