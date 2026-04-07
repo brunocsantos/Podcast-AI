@@ -1,6 +1,8 @@
-"""Summarize and group collected articles into topics using Claude."""
+"""Summarize and group collected articles into topics using Gemini."""
 
-import anthropic
+import json
+
+import google.generativeai as genai
 
 from podcast_ai.models.schemas import Article, Topic
 from podcast_ai.utils.logging import get_logger
@@ -32,7 +34,7 @@ Os article_indices são os índices (começando em 0) dos artigos que pertencem 
 def summarize_articles(
     articles: list[Article], api_key: str, max_topics: int = 5
 ) -> list[Topic]:
-    """Group and summarize articles into topics using Claude."""
+    """Group and summarize articles into topics using Gemini."""
     if not articles:
         return []
 
@@ -41,23 +43,17 @@ def summarize_articles(
         for i, a in enumerate(articles)
     )
 
-    client = anthropic.Anthropic(api_key=api_key)
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=2000,
-        messages=[
-            {
-                "role": "user",
-                "content": SUMMARIZE_PROMPT.format(
-                    max_topics=max_topics, articles_text=articles_text
-                ),
-            }
-        ],
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-2.0-flash")
+
+    response = model.generate_content(
+        SUMMARIZE_PROMPT.format(max_topics=max_topics, articles_text=articles_text),
+        generation_config=genai.types.GenerationConfig(
+            response_mime_type="application/json",
+        ),
     )
 
-    import json
-
-    raw = response.content[0].text
+    raw = response.text
     # Handle markdown code blocks in response
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]

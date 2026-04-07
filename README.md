@@ -5,8 +5,8 @@ Podcast automatizado sobre games, gerado inteiramente por IA e publicado diariam
 ## Como funciona?
 
 1. **Coleta automática** - Puxa notícias de RSS feeds (IGN, PC Gamer, Eurogamer, The Enemy, etc.)
-2. **Resumo por IA** - Claude agrupa e resume as notícias em tópicos
-3. **Roteiro por IA** - Claude gera um diálogo natural entre dois apresentadores
+2. **Resumo por IA** - Gemini agrupa e resume as notícias em tópicos
+3. **Roteiro por IA** - Gemini gera um diálogo natural entre dois apresentadores
 4. **Áudio por IA** - ElevenLabs sintetiza vozes distintas para cada host
 5. **Publicação automática** - Push para GitHub Pages, Spotify busca o feed automaticamente
 
@@ -22,7 +22,7 @@ Podcast automatizado sobre games, gerado inteiramente por IA e publicado diariam
 - Python 3.11+
 - ffmpeg (para processamento de áudio)
 - Git configurado com push access ao repositório
-- Chaves de API: [Anthropic](https://console.anthropic.com/) e [ElevenLabs](https://elevenlabs.io/)
+- Chaves de API: [Google AI Studio](https://aistudio.google.com/apikey) (gratuito) e [ElevenLabs](https://elevenlabs.io/)
 
 ### Instalação
 
@@ -152,7 +152,7 @@ worker/                  # Landing page do podcast
 
 | Componente | Tecnologia |
 |-----------|------------|
-| Roteiro | Claude API (Anthropic) |
+| Roteiro | Google Gemini (gratuito) |
 | Vozes | ElevenLabs |
 | Coleta de notícias | feedparser |
 | Áudio | pydub + ffmpeg |

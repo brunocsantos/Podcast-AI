@@ -49,7 +49,7 @@ def run_pipeline(settings: Settings, episode_number: int | None = None) -> Path:
     # Step 2: Summarize into topics
     log.info("step", name="summarize")
     topics = summarize_articles(
-        articles, settings.anthropic_api_key, settings.podcast.max_topics
+        articles, settings.gemini_api_key, settings.podcast.max_topics
     )
     if not topics:
         raise RuntimeError("Failed to generate topics from articles")
@@ -59,7 +59,7 @@ def run_pipeline(settings: Settings, episode_number: int | None = None) -> Path:
     script, title, description = generate_script(
         topics=topics,
         hosts=settings.podcast.hosts,
-        api_key=settings.anthropic_api_key,
+        api_key=settings.gemini_api_key,
         episode_number=episode_number,
         target_minutes=settings.podcast.target_duration_minutes,
     )

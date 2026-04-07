@@ -65,7 +65,7 @@ class PublisherConfig(BaseModel):
 
 
 class Settings(BaseSettings):
-    anthropic_api_key: str = ""
+    gemini_api_key: str = ""
     elevenlabs_api_key: str = ""
 
     podcast: PodcastConfig = PodcastConfig()

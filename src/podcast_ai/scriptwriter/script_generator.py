@@ -1,9 +1,9 @@
-"""Generate podcast scripts using Claude API."""
+"""Generate podcast scripts using Google Gemini API."""
 
 import json
 from datetime import date
 
-import anthropic
+import google.generativeai as genai
 
 from podcast_ai.models.schemas import DialogueLine, Script, Topic
 from podcast_ai.scriptwriter.prompts import EPISODE_PROMPT, SYSTEM_PROMPT
@@ -19,8 +19,8 @@ def generate_script(
     api_key: str,
     episode_number: int = 1,
     target_minutes: int = 15,
-) -> Script:
-    """Generate a full podcast script from topics using Claude."""
+) -> tuple[Script, str, str]:
+    """Generate a full podcast script from topics using Gemini."""
     hosts_description = "\n".join(
         f"- {h.name}: {h.personality}" for h in hosts
     )
@@ -40,15 +40,20 @@ def generate_script(
         topics_text=topics_text,
     )
 
-    client = anthropic.Anthropic(api_key=api_key)
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=8000,
-        system=system,
-        messages=[{"role": "user", "content": user_message}],
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(
+        "gemini-2.0-flash",
+        system_instruction=system,
     )
 
-    raw = response.content[0].text
+    response = model.generate_content(
+        user_message,
+        generation_config=genai.types.GenerationConfig(
+            response_mime_type="application/json",
+        ),
+    )
+
+    raw = response.text
     # Handle markdown code blocks in response
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]

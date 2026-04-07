@@ -100,11 +100,11 @@ def script(
     with open(from_file) as f:
         articles = [Article(**a) for a in json.load(f)]
 
-    topics = summarize_articles(articles, settings.anthropic_api_key, settings.podcast.max_topics)
+    topics = summarize_articles(articles, settings.gemini_api_key, settings.podcast.max_topics)
     result, title, description = generate_script(
         topics=topics,
         hosts=settings.podcast.hosts,
-        api_key=settings.anthropic_api_key,
+        api_key=settings.gemini_api_key,
         episode_number=episode_number,
         target_minutes=settings.podcast.target_duration_minutes,
     )
