@@ -35,15 +35,11 @@ audio:
   silence_between_turns_ms: 300
 
 publisher:
-  storage_backend: "s3"  # "local" para testes, "s3" para produção (Spotify precisa de URL pública)
+  storage_backend: "github_pages"  # Gratuito, sem cartão de crédito
   output_dir: "data/episodes"
   feed_path: "data/feed.xml"
-  base_url: "https://seu-dominio.com/podcast"  # URL base pública onde o feed e áudios ficam acessíveis
-  s3_bucket: ""
-  s3_region: "us-east-1"
-  s3_endpoint_url: ""  # Para Cloudflare R2: https://<account_id>.r2.cloudflarestorage.com
-  # A base_url deve apontar para o seu Worker Cloudflare
-  # Exemplo: https://podcast-ai.<seu-subdomain>.workers.dev
+  base_url: "https://brunocsantos.github.io/Podcast-AI"
+  # Os arquivos são publicados na branch gh-pages automaticamente
 
 scheduler:
   enabled: true

@@ -55,20 +55,18 @@ class SchedulerConfig(BaseModel):
 
 
 class PublisherConfig(BaseModel):
-    storage_backend: str = "local"  # "local" or "s3"
+    storage_backend: str = "github_pages"  # "github_pages", "s3", or "local"
     output_dir: str = "data/episodes"
     feed_path: str = "data/feed.xml"
-    base_url: str = "https://example.com/podcast"
+    base_url: str = "https://brunocsantos.github.io/Podcast-AI"
     s3_bucket: str = ""
     s3_region: str = ""
-    s3_endpoint_url: str = ""  # For Cloudflare R2 or MinIO
+    s3_endpoint_url: str = ""
 
 
 class Settings(BaseSettings):
     anthropic_api_key: str = ""
     elevenlabs_api_key: str = ""
-    aws_access_key_id: str = ""
-    aws_secret_access_key: str = ""
 
     podcast: PodcastConfig = PodcastConfig()
     collector: CollectorConfig = CollectorConfig()

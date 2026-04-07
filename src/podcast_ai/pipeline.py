@@ -1,6 +1,7 @@
 """Core pipeline logic extracted for reuse by CLI and scheduler."""
 
 import json
+import shutil
 import tempfile
 from pathlib import Path
 
@@ -25,7 +26,7 @@ def run_pipeline(settings: Settings, episode_number: int | None = None) -> Path:
     from podcast_ai.audio.audio_assembler import assemble_episode
     from podcast_ai.publisher.episode_tracker import EpisodeTracker
     from podcast_ai.publisher.feed_generator import build_feed
-    from podcast_ai.publisher.storage import upload_episode, upload_feed
+    from podcast_ai.publisher.storage import publish_to_github_pages
 
     data_dir = PROJECT_ROOT / "data"
     tracker = EpisodeTracker(data_dir / "episodes.json")
@@ -94,17 +95,9 @@ def run_pipeline(settings: Settings, episode_number: int | None = None) -> Path:
             outro_path=outro_path if outro_path.exists() else None,
         )
 
-    # Step 5: Upload audio to cloud storage
-    log.info("step", name="upload")
-    audio_url = upload_episode(
-        audio_path=output_path,
-        publisher_config=settings.publisher,
-        aws_access_key_id=settings.aws_access_key_id or None,
-        aws_secret_access_key=settings.aws_secret_access_key or None,
-    )
-
-    # Step 6: Track episode and rebuild feed
-    log.info("step", name="publish")
+    # Step 5: Track episode
+    log.info("step", name="track")
+    audio_url = f"{settings.publisher.base_url}/episodes/{output_path.name}"
     topic_titles = [t.title for t in topics]
     tracker.add_episode(
         episode_number=episode_number,
@@ -115,17 +108,58 @@ def run_pipeline(settings: Settings, episode_number: int | None = None) -> Path:
         topics=topic_titles,
     )
 
+    # Step 6: Build feed
+    log.info("step", name="feed")
     feed_path = build_feed(
         podcast_config=settings.podcast,
         publisher_config=settings.publisher,
         episodes=tracker.get_all(),
     )
-    upload_feed(
-        feed_path,
-        settings.publisher,
-        aws_access_key_id=settings.aws_access_key_id or None,
-        aws_secret_access_key=settings.aws_secret_access_key or None,
+
+    # Step 7: Publish to GitHub Pages
+    log.info("step", name="publish")
+    site_dir = _build_site_dir(
+        feed_path=feed_path,
+        episodes_dir=episodes_dir,
+        landing_page=PROJECT_ROOT / "worker" / "public" / "index.html",
+        artwork_path=PROJECT_ROOT / "assets" / "artwork.jpg",
     )
+    publish_to_github_pages(settings.publisher, site_dir)
 
     log.info("pipeline_complete", episode=episode_number, audio=str(output_path))
     return output_path
+
+
+def _build_site_dir(
+    feed_path: Path,
+    episodes_dir: Path,
+    landing_page: Path,
+    artwork_path: Path,
+) -> Path:
+    """Build the site directory structure for GitHub Pages deployment."""
+    site_dir = feed_path.parent / "site"
+    site_dir.mkdir(parents=True, exist_ok=True)
+
+    # Copy feed.xml
+    shutil.copy2(feed_path, site_dir / "feed.xml")
+
+    # Copy landing page
+    if landing_page.exists():
+        shutil.copy2(landing_page, site_dir / "index.html")
+
+    # Copy all episode audio files
+    site_episodes = site_dir / "episodes"
+    site_episodes.mkdir(parents=True, exist_ok=True)
+    if episodes_dir.exists():
+        for mp3 in episodes_dir.glob("*.mp3"):
+            shutil.copy2(mp3, site_episodes / mp3.name)
+
+    # Copy artwork if available
+    if artwork_path.exists():
+        shutil.copy2(artwork_path, site_dir / "artwork.jpg")
+    # Also check for PNG
+    png_path = artwork_path.with_suffix(".png")
+    if png_path.exists():
+        shutil.copy2(png_path, site_dir / "artwork.png")
+
+    return site_dir

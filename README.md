@@ -8,7 +8,7 @@ Podcast automatizado sobre games, gerado inteiramente por IA e publicado diariam
 2. **Resumo por IA** - Claude agrupa e resume as notícias em tópicos
 3. **Roteiro por IA** - Claude gera um diálogo natural entre dois apresentadores
 4. **Áudio por IA** - ElevenLabs sintetiza vozes distintas para cada host
-5. **Publicação automática** - Upload para S3/R2, feed RSS atualizado, Spotify busca automaticamente
+5. **Publicação automática** - Push para GitHub Pages, Spotify busca o feed automaticamente
 
 ## Apresentadores
 
@@ -21,8 +21,8 @@ Podcast automatizado sobre games, gerado inteiramente por IA e publicado diariam
 
 - Python 3.11+
 - ffmpeg (para processamento de áudio)
+- Git configurado com push access ao repositório
 - Chaves de API: [Anthropic](https://console.anthropic.com/) e [ElevenLabs](https://elevenlabs.io/)
-- Storage na nuvem: AWS S3 ou [Cloudflare R2](https://www.cloudflare.com/products/r2/) (para Spotify)
 
 ### Instalação
 
@@ -37,25 +37,6 @@ pip install -e .
 
 cp .env.example .env
 # Edite o .env com suas chaves de API
-```
-
-### Configuração
-
-Edite `config/settings.yaml`:
-
-```yaml
-podcast:
-  artwork_url: "https://seu-dominio.com/podcast/artwork.jpg"  # 1400x1400+
-
-publisher:
-  storage_backend: "s3"
-  base_url: "https://seu-dominio.com/podcast"
-  s3_bucket: "meu-podcast-bucket"
-  s3_region: "us-east-1"
-
-scheduler:
-  hour: 8
-  timezone: "America/Sao_Paulo"
 ```
 
 ## Uso
@@ -87,96 +68,61 @@ podcast-ai audio --from-file data/scripts/ep_001.json     # Gerar áudio
 podcast-ai episodes                                       # Listar episódios
 ```
 
-## Deploy no Cloudflare + Spotify
+## Publicar no Spotify (100% gratuito)
 
-O projeto inclui um **Cloudflare Worker** que serve a landing page, feed RSS e episódios
-a partir do **Cloudflare R2** (storage gratuito até 10GB/mês).
+O projeto usa **GitHub Pages** para hospedar o feed RSS e os episódios.
+Não precisa de cartão de crédito nem de serviço pago.
 
-### 1. Criar o bucket R2
+### 1. Ativar GitHub Pages
 
-```bash
-# Instale o Wrangler CLI
-npm install -g wrangler
+1. Vá no repositório no GitHub
+2. **Settings** > **Pages**
+3. Em "Source", selecione **Deploy from a branch**
+4. Selecione a branch **gh-pages** e pasta **/ (root)**
+5. Clique em **Save**
 
-# Faça login na Cloudflare
-wrangler login
+O site ficará disponível em: `https://brunocsantos.github.io/Podcast-AI/`
 
-# Crie o bucket R2
-wrangler r2 bucket create podcast-ai
-```
+### 2. Adicionar artwork
 
-### 2. Configurar o projeto
+Spotify exige uma imagem de capa (1400x1400 a 3000x3000, JPEG/PNG).
+Coloque o arquivo em `assets/artwork.jpg` e configure no `settings.yaml`:
 
-Edite `config/settings.yaml`:
-
-```yaml
-publisher:
-  storage_backend: "s3"
-  base_url: "https://podcast-ai.<seu-subdomain>.workers.dev"
-  s3_bucket: "podcast-ai"
-  s3_endpoint_url: "https://<account_id>.r2.cloudflarestorage.com"
-```
-
-Edite `.env`:
-
-```
-AWS_ACCESS_KEY_ID=<R2 Access Key ID>
-AWS_SECRET_ACCESS_KEY=<R2 Secret Access Key>
-```
-
-(Gere as chaves R2 em: Cloudflare Dashboard > R2 > Manage R2 API Tokens)
-
-### 3. Deploy do Worker
-
-```bash
-# Deploy do Worker que serve os arquivos
-wrangler deploy
-```
-
-O Worker fica disponível em `https://podcast-ai.<seu-subdomain>.workers.dev`
-
-### 4. Configurar artwork
-
-Spotify exige uma imagem de capa (1400x1400 a 3000x3000, JPEG/PNG):
-
-```bash
-# Upload manual da artwork para o R2
-wrangler r2 object put podcast-ai/artwork.jpg --file=assets/artwork.jpg
-```
-
-Configure em `settings.yaml`:
 ```yaml
 podcast:
-  artwork_url: "https://podcast-ai.<seu-subdomain>.workers.dev/artwork.jpg"
+  artwork_url: "https://brunocsantos.github.io/Podcast-AI/artwork.jpg"
 ```
 
-### 5. Gerar primeiro episódio
+### 3. Gerar primeiro episódio
 
 ```bash
 podcast-ai run
 ```
 
-Verifique o feed em: `https://podcast-ai.<seu-subdomain>.workers.dev/feed.xml`
+O pipeline automaticamente:
+- Gera o episódio (coleta, roteiro, áudio)
+- Publica na branch `gh-pages` (feed.xml + MP3)
 
-### 6. Submeter ao Spotify
+Verifique: `https://brunocsantos.github.io/Podcast-AI/feed.xml`
+
+### 4. Submeter ao Spotify
 
 1. Acesse [Spotify for Podcasters](https://podcasters.spotify.com/)
-2. Clique em "Add your podcast"
-3. Cole a URL do feed: `https://podcast-ai.<seu-subdomain>.workers.dev/feed.xml`
+2. Clique em **"Add your podcast"**
+3. Cole a URL do feed: `https://brunocsantos.github.io/Podcast-AI/feed.xml`
 4. Siga as instruções de verificação
 
 O Spotify busca o feed automaticamente a cada poucas horas.
 
-### 7. Automatizar geração diária
+### 5. Automatizar geração diária
 
 ```bash
-# Inicia o scheduler que gera um episódio novo todo dia
 podcast-ai schedule
 ```
 
-Para rodar como serviço em produção, use systemd, Docker, ou um servidor com cron.
+Para rodar como serviço permanente, use systemd, Docker, ou um servidor com cron.
 
-## Estrutura do projeto
+## Arquitetura
 
 ```
 src/podcast_ai/
@@ -193,10 +139,13 @@ src/podcast_ai/
 │   └── audio_assembler.py   # Concatenação com pydub
 ├── publisher/           # Publicação
 │   ├── feed_generator.py    # Feed RSS (Spotify-compatible)
-│   ├── storage.py       # Upload S3/R2
+│   ├── storage.py       # Deploy via GitHub Pages
 │   └── episode_tracker.py   # Histórico de episódios
 ├── models/              # Modelos de dados (Pydantic)
 └── utils/               # Config e logging
+
+worker/                  # Landing page do podcast
+└── public/index.html
 ```
 
 ## Tecnologias
@@ -208,6 +157,6 @@ src/podcast_ai/
 | Coleta de notícias | feedparser |
 | Áudio | pydub + ffmpeg |
 | Feed RSS | podgen |
-| Storage | boto3 (S3/R2) |
+| Hosting | GitHub Pages (gratuito) |
 | Agendamento | APScheduler |
 | CLI | typer |
