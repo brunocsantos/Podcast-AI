@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Game Over Cast</title>
+    <link>https://brunocsantos.github.io/Podcast-AI</link>
+    <description>Seu podcast diÃ¡rio de games gerado por IA. NotÃ­cias, anÃ¡lises e discussÃµes sobre o mundo dos jogos com apresentadores virtuais.</description>
+    <itunes:explicit>no</itunes:explicit>
+    <docs>http://www.rssboard.org/rss-specification</docs>
+    <generator>python-podgen v1.1.0 https://podgen.readthedocs.org</generator>
+    <language>pt-BR</language>
+    <lastBuildDate>Tue, 07 Apr 2026 19:35:36 +0000</lastBuildDate>
+    <itunes:author>Game Over Cast AI</itunes:author>
+    <dc:creator>Game Over Cast AI</dc:creator>
+    <pubDate>Tue, 07 Apr 2026 19:35:36 +0000</pubDate>
+    <itunes:category text="Leisure">
+      <itunes:category text="Video Games"/>
+    </itunes:category>
+    <itunes:image href="https://brunocsantos.github.io/Podcast-AI/artwork.jpg"/>
+    <item>
+      <title>Episódio #2: Novidades e Análises do Mundo dos Games</title>
+      <description><![CDATA[Neste episódio, discutimos as últimas notícias sobre desenvolvimento de jogos, análises de jogos recentes e notícias do mercado e da comunidade de games.]]></description>
+      <content:encoded><![CDATA[Neste episódio, discutimos as últimas notícias sobre desenvolvimento de jogos, análises de jogos recentes e notícias do mercado e da comunidade de games.]]></content:encoded>
+      <guid isPermaLink="false">https://brunocsantos.github.io/Podcast-AI/episodes/ep_002.mp3</guid>
+      <enclosure url="https://brunocsantos.github.io/Podcast-AI/episodes/ep_002.mp3" length="2445105" type="audio/mpeg"/>
+      <pubDate>Tue, 07 Apr 2026 19:35:36 +0000</pubDate>
+    </item>
+    <item>
+      <title>Game Over Cast #1: Notícias e Tendências do Mundo dos Jogos</title>
+      <description><![CDATA[Neste episódio, discutimos as últimas notícias e tendências do mundo dos jogos, desde desenvolvimento de jogos até comunidade e eventos.]]></description>
+      <content:encoded><![CDATA[Neste episódio, discutimos as últimas notícias e tendências do mundo dos jogos, desde desenvolvimento de jogos até comunidade e eventos.]]></content:encoded>
+      <guid isPermaLink="false">https://brunocsantos.github.io/Podcast-AI/episodes/ep_001.mp3</guid>
+      <enclosure url="https://brunocsantos.github.io/Podcast-AI/episodes/ep_001.mp3" length="2729317" type="audio/mpeg"/>
+      <pubDate>Tue, 07 Apr 2026 19:34:39 +0000</pubDate>
+    </item>
+  </channel>
+</rss>
