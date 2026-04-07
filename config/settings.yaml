@@ -1,7 +1,10 @@
 podcast:
   name: "Game Over Cast"
   language: "pt-BR"
-  description: "Seu podcast semanal de games gerado por IA"
+  description: "Seu podcast diário de games gerado por IA. Notícias, análises e discussões sobre o mundo dos jogos com apresentadores virtuais."
+  author_name: "Game Over Cast AI"
+  author_email: ""
+  artwork_url: ""  # URL da imagem de capa (1400x1400 a 3000x3000, JPEG/PNG) - obrigatório para Spotify
   hosts:
     - name: "Lucas"
       voice_id: "JBFqnCBsd6RMkjVDRZzb"
@@ -13,7 +16,7 @@ podcast:
   max_topics: 5
 
 collector:
-  lookback_hours: 48
+  lookback_hours: 24  # Últimas 24h para episódios diários
   feeds:
     - url: "https://www.ign.com/rss/articles"
       name: "IGN"
@@ -32,7 +35,16 @@ audio:
   silence_between_turns_ms: 300
 
 publisher:
-  storage_backend: "local"
+  storage_backend: "s3"  # "local" para testes, "s3" para produção (Spotify precisa de URL pública)
   output_dir: "data/episodes"
   feed_path: "data/feed.xml"
-  base_url: "https://example.com/podcast"
+  base_url: "https://seu-dominio.com/podcast"  # URL base pública onde o feed e áudios ficam acessíveis
+  s3_bucket: ""
+  s3_region: "us-east-1"
+  s3_endpoint_url: ""  # Para Cloudflare R2: https://<account_id>.r2.cloudflarestorage.com
+
+scheduler:
+  enabled: true
+  hour: 8      # Hora de gerar o episódio (0-23)
+  minute: 0    # Minuto (0-59)
+  timezone: "America/Sao_Paulo"

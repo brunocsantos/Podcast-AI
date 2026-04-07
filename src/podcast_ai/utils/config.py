@@ -26,6 +26,9 @@ class PodcastConfig(BaseModel):
     hosts: list[HostConfig] = []
     target_duration_minutes: int = 15
     max_topics: int = 5
+    artwork_url: str | None = None
+    author_name: str = "Game Over Cast AI"
+    author_email: str = ""
 
 
 class FeedSource(BaseModel):
@@ -44,21 +47,34 @@ class AudioConfig(BaseModel):
     silence_between_turns_ms: int = 300
 
 
+class SchedulerConfig(BaseModel):
+    enabled: bool = False
+    hour: int = 8
+    minute: int = 0
+    timezone: str = "America/Sao_Paulo"
+
+
 class PublisherConfig(BaseModel):
-    storage_backend: str = "local"
+    storage_backend: str = "local"  # "local" or "s3"
     output_dir: str = "data/episodes"
     feed_path: str = "data/feed.xml"
     base_url: str = "https://example.com/podcast"
+    s3_bucket: str = ""
+    s3_region: str = ""
+    s3_endpoint_url: str = ""  # For Cloudflare R2 or MinIO
 
 
 class Settings(BaseSettings):
     anthropic_api_key: str = ""
     elevenlabs_api_key: str = ""
+    aws_access_key_id: str = ""
+    aws_secret_access_key: str = ""
 
     podcast: PodcastConfig = PodcastConfig()
     collector: CollectorConfig = CollectorConfig()
     audio: AudioConfig = AudioConfig()
     publisher: PublisherConfig = PublisherConfig()
+    scheduler: SchedulerConfig = SchedulerConfig()
 
 
 def load_settings(config_path: Path | None = None) -> Settings:
